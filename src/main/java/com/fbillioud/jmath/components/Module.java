@@ -15,6 +15,7 @@
  */
 package com.fbillioud.jmath.components;
 
+import com.fbillioud.jmath.DispatchMouseToParent;
 import com.fbillioud.jmath.DrawShape;
 import com.fbillioud.jmath.MathComponent;
 import com.fbillioud.jmath.MathComponent.MathMLParsingException;
@@ -77,6 +78,11 @@ public abstract class Module {
         support.add(comp.asComponent(), name);
         mathComponents.add(comp);
         support.invalidate();
+        
+        DispatchMouseToParent l = new DispatchMouseToParent();
+        comp.asComponent().addMouseListener(l);
+        comp.asComponent().addMouseMotionListener(l);
+        comp.asComponent().addMouseWheelListener(l);
     }
 
     /** Set the layout that position the children **/
