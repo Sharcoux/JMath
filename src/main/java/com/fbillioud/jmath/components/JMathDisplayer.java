@@ -126,15 +126,15 @@ public class JMathDisplayer extends JPanel implements MathComponent {
     }
     
     @Override
-    public int getFontSize() {
+    public float getFontSize() {
         int fontSize = getFont().getSize();
         return isScaleRatioSet() ? (int)(fontSize/ratio) : fontSize;
     }
     @Override
-    public void setFontSize(int size) {
+    public void setFontSize(float size) {
         float newSize = isScaleRatioSet() ? size * ratio : size;
         setFont(getFont().deriveFont(newSize));
-        for(MathComponent c : getMathComponents()) {c.setFontSize((int)newSize);}
+        for(MathComponent c : getMathComponents()) {c.setFontSize(newSize);}
         invalidate();
     }
     
@@ -165,7 +165,7 @@ public class JMathDisplayer extends JPanel implements MathComponent {
         Graphics2D g2D = (Graphics2D)g;
         g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        int strokeSize = Math.max(getFontSize()/10, 1);
+        int strokeSize = Math.max((int)(getFontSize()/10f), 1);
         g2D.setStroke(new BasicStroke(strokeSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         if(module!=null) module.paintLines(g2D);
     }

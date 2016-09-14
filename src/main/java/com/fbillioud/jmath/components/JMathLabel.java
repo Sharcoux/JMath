@@ -31,12 +31,16 @@ public class JMathLabel extends JLabel implements MathComponent {
 
     private final MathComponent parent;
 
-    public JMathLabel(MathComponent parent, String text) {super(text);this.parent = parent;setOpaque(false);}
+    public JMathLabel(MathComponent parent, String text) {
+        super(text);
+        this.parent = parent;
+        setOpaque(false);
+    }
     
     @Override
-    public int getFontSize() {return getFont().getSize();}
+    public float getFontSize() {return getFont().getSize();}
     @Override
-    public void setFontSize(int size) { setFont(getFont().deriveFont((float)size)); }
+    public void setFontSize(float size) { setFont(getFont().deriveFont(size)); }
     @Override
     public List<MathComponent> getMathComponents() {return new LinkedList<>();}
     @Override

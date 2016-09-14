@@ -29,12 +29,12 @@ public interface MathComponent {
      * Get the current font size of this JComponent
      * @return the font size as an integer
      */
-    public int getFontSize();
+    public float getFontSize();
     /**
      * Set the font size to use in this JComponent
      * @param size the font size to use, as an integer
      */
-    public void setFontSize(int size);
+    public void setFontSize(float size);
     /**
      * Get all children {@link MathComponent}
      * @return the list of all children
