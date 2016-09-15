@@ -73,7 +73,10 @@ public class JMathDisplayer extends JPanel implements MathComponent {
             Logger.getLogger(JMathDisplayer.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        if(foreground==null && parent!=null) setForeground(parent.asComponent().getForeground());
+        if(parent!=null) {
+            this.setFont(parent.asComponent().getFont());
+            if(foreground==null) setForeground(parent.asComponent().getForeground());
+        }
     }
     
     /**
@@ -86,6 +89,7 @@ public class JMathDisplayer extends JPanel implements MathComponent {
     
     public void setMathML(String mathml) {
         try {
+            removeAll();
             setMathElement(Jsoup.parse(mathml).body().child(0));
         } catch (MathMLParsingException ex) {
             Logger.getLogger(JMathDisplayer.class.getName()).log(Level.SEVERE, null, ex);

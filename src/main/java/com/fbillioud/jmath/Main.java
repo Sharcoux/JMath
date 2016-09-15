@@ -75,6 +75,7 @@ public class Main {
 //                mainFrame.setContentPane(mathComp);
                 mainFrame.pack();
                 mainFrame.setVisible(true);
+                mathComp.setMathML("<mrow><mi>test2</mi><mfrac><mrow>test<msqrt><mfrac><mrow>1</mrow><mrow>2</mrow></mfrac></msqrt></mrow><mrow>2</mrow></mfrac></mrow>");
             }
         });
     }
