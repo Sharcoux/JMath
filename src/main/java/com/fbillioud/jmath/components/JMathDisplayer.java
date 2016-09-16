@@ -120,8 +120,8 @@ public class JMathDisplayer extends JPanel implements MathComponent {
     
     @Override
     public float getFontSize() {
-        int fontSize = getFont().getSize();
-        return isScaleRatioSet() ? (int)(fontSize/ratio) : fontSize;
+        float fontSize = getFont().getSize2D();
+        return isScaleRatioSet() ? fontSize/ratio : fontSize;
     }
     @Override
     public void setFontSize(float size) {

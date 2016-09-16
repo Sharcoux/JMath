@@ -47,7 +47,7 @@ public class JMathLabel extends JLabel implements MathComponent {
     @Override
     public Dimension getPreferredSize() {
         Dimension d = super.getPreferredSize();
-        if(isItalic()) {return new Dimension(d.width+2,d.height);}
+        if(isItalic()) {return new Dimension(d.width+2,d.height);}//HACK to display italic text within bounds
         return d;
     }
 }
