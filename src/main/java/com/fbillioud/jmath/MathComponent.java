@@ -15,8 +15,6 @@
  */
 package com.fbillioud.jmath;
 
-import java.util.List;
-import javax.swing.JComponent;
 import org.jsoup.nodes.Element;
 
 /**
@@ -35,22 +33,6 @@ public interface MathComponent {
      * @param size the font size to use, as an integer
      */
     public void setFontSize(float size);
-    /**
-     * Get all children {@link MathComponent}
-     * @return the list of all children
-     */
-    public List<MathComponent> getMathComponents();
-    /**
-     * Returns the JComponent that reprensents this MathComponent.
-     * Should return itself.
-     * @return itself, or the JComponent representing this MathComponent
-     */
-    public JComponent asComponent();
-    /**
-     * Get the parent of this MathComponent.
-     * @return this component's parent, or null
-     */
-    public MathComponent getParentComponent();
     
     /**
      * Error thrown while parsing MathML.

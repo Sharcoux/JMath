@@ -20,14 +20,13 @@ import com.fbillioud.jmath.MathComponent;
 import com.fbillioud.jmath.components.Module.*;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComponent;
@@ -46,8 +45,6 @@ public class JMathDisplayer extends JPanel implements MathComponent {
     protected Element mathElement;
     /** The MathModule that will represente the element **/
     private Module module;
-    /** The {@link MathComponent} this component belongs to **/
-    private final MathComponent parent;
     /** The foreground color of this element if not inherited **/
     private Color foreground;
 
@@ -62,9 +59,8 @@ public class JMathDisplayer extends JPanel implements MathComponent {
      * @param mathElement the Jsoup element to display
      * @param parent the parent this JMathDisplayer belongs to
      */
-    JMathDisplayer(Element mathElement, MathComponent parent) {
+    JMathDisplayer(Element mathElement, JComponent parent) {
         setOpaque(false);
-        this.parent = parent;
 
         try {
             //Install the best module to represent the element
@@ -74,8 +70,8 @@ public class JMathDisplayer extends JPanel implements MathComponent {
         }
         
         if(parent!=null) {
-            this.setFont(parent.asComponent().getFont());
-            if(foreground==null) setForeground(parent.asComponent().getForeground());
+            this.setFont(parent.getFont());
+            if(foreground==null) setForeground(parent.getForeground());
         }
     }
     
@@ -95,15 +91,6 @@ public class JMathDisplayer extends JPanel implements MathComponent {
             Logger.getLogger(JMathDisplayer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    /**
-     * Get the {@link MathComponent} this JMathDisplayer belongs to.
-     * @return the parent {@link MathComponent}
-     */
-    @Override
-    public MathComponent getParentComponent() {
-        return parent;
-    }
 
     /**
      * Get the current Jsoup Element this component represents.
@@ -121,14 +108,14 @@ public class JMathDisplayer extends JPanel implements MathComponent {
     @Override
     public void setForeground(Color color) {
         if(foreground==null) {super.setForeground(color);}//We don't override the mathML color attribute
-        if(module!=null) for(MathComponent c : getMathComponents()) {c.asComponent().setForeground(color);}
+        if(module!=null) for(Component c : getComponents()) {c.setForeground(color);}
     }
     
     @Override
     public void setFont(Font f) {
         if(isScaleRatioSet()) f = f.deriveFont(f.getSize2D()*ratio);
         super.setFont(f);
-        for(MathComponent c : getMathComponents()) {c.asComponent().setFont(f);}
+        for(Component c : getComponents()) {c.setFont(f);}
     }
     
     @Override
@@ -140,7 +127,7 @@ public class JMathDisplayer extends JPanel implements MathComponent {
     public void setFontSize(float size) {
         float newSize = isScaleRatioSet() ? size * ratio : size;
         setFont(getFont().deriveFont(newSize));
-        for(MathComponent c : getMathComponents()) {c.setFontSize(newSize);}
+        for(Component c : getComponents()) {if(c instanceof MathComponent) ((MathComponent)c).setFontSize(newSize);}
         invalidate();
     }
     
@@ -160,12 +147,6 @@ public class JMathDisplayer extends JPanel implements MathComponent {
     }
     
     @Override
-    public List<MathComponent> getMathComponents() {
-        if(module==null) {return new LinkedList<>();}
-        return module.getMathComponents();
-    }
-    
-    @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2D = (Graphics2D)g;
@@ -175,9 +156,6 @@ public class JMathDisplayer extends JPanel implements MathComponent {
         g2D.setStroke(new BasicStroke(strokeSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         if(module!=null) module.paintLines(g2D);
     }
-    
-    @Override
-    public JComponent asComponent() {return this;}
     
     /**
      * Set the Module best suited to represent this mathElement
@@ -211,7 +189,7 @@ public class JMathDisplayer extends JPanel implements MathComponent {
                 else {m = new ModuleRow(mathElement, this);}
                 break;
             case "math" : m = new ModuleRow(mathElement, this); break;
-            default: m = new Module(new Element(Tag.valueOf("math"),""), this.asComponent(), null) {
+            default: m = new Module(new Element(Tag.valueOf("math"),""), this, null) {
                 @Override
                 public void paintLines(Graphics2D g) {}
             };

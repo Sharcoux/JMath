@@ -18,9 +18,6 @@ package com.fbillioud.jmath.components;
 import com.fbillioud.jmath.MathComponent;
 import java.awt.Dimension;
 import java.awt.font.LineMetrics;
-import java.util.LinkedList;
-import java.util.List;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 /**
@@ -29,11 +26,8 @@ import javax.swing.JLabel;
  */
 public class JMathLabel extends JLabel implements MathComponent {
 
-    private final MathComponent parent;
-
-    public JMathLabel(MathComponent parent, String text) {
+    public JMathLabel(String text) {
         super(text);
-        this.parent = parent;
         setOpaque(false);
     }
     
@@ -41,12 +35,6 @@ public class JMathLabel extends JLabel implements MathComponent {
     public float getFontSize() {return getFont().getSize();}
     @Override
     public void setFontSize(float size) { setFont(getFont().deriveFont(size)); }
-    @Override
-    public List<MathComponent> getMathComponents() {return new LinkedList<>();}
-    @Override
-    public JComponent asComponent() {return this;}
-    @Override
-    public MathComponent getParentComponent() {return parent;}
 
     @Override
     public float getAlignmentY() {
