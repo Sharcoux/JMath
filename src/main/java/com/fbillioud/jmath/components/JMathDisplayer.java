@@ -49,7 +49,7 @@ public class JMathDisplayer extends JPanel implements MathComponent {
     private Color foreground;
 
     /** Create an empty JMathDisplayer **/
-    public JMathDisplayer() {this("<math></math>");}
+    public JMathDisplayer() {this("<math xmlns=\"http://www.w3.org/1998/Math/MathML\"></math>");}
     /** Display this mathML string **/
     public JMathDisplayer(String mathML) {this(Jsoup.parse(mathML).body().child(0), null);}
 
