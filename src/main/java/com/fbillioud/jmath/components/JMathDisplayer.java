@@ -42,7 +42,7 @@ import org.jsoup.parser.Tag;
 public class JMathDisplayer extends JPanel implements MathComponent {
 
     /** The Jsoup Element to display **/
-    protected Element mathElement;
+    private Element mathElement;
     /** The MathModule that will represente the element **/
     private Module module;
     /** The foreground color of this element if not inherited **/
