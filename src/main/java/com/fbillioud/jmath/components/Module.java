@@ -63,11 +63,6 @@ public abstract class Module {
         }
     }
     
-    /** Get all children **/
-    public LinkedList<JComponent> getJComponents() {
-        return mathComponents;
-    }
-    
     /** Get the layout in charge of displaying the children. **/
     public LayoutManager getLayout() {
         return support.getLayout();
@@ -76,7 +71,6 @@ public abstract class Module {
     /** Set the child by its name **/
     public void setComponent(JComponent comp, String name) {
         support.add(comp, name);
-        mathComponents.add(comp);
         support.invalidate();
         comp.setName(name);
         
@@ -148,7 +142,7 @@ public abstract class Module {
             //si le contenu de la racine est en vrac, on le wrap dans un mrow. On fait de même si le childNode est un textNode. Sinon, erreur !
             Element innerSqrt = (mathElement.childNodeSize()==1&&mathElement.children().size()==1) ? mathElement.child(0) : Jsoup.parse("<mrow></mrow>").select("mrow").first().html(mathElement.html());
             JMathDisplayer innerPane = new JMathDisplayer(innerSqrt, parent);
-            setComponent(innerPane, "rootedPane");
+            setComponent(innerPane, "main");
         }
     }
     
@@ -163,7 +157,7 @@ public abstract class Module {
             JMathDisplayer root = new JMathDisplayer(rootValue, parent);
             root.setScaleRatio(0.6f);
             root.setFontSize(innerPane.getFontSize());
-            setComponent(innerPane, "rootedPane");
+            setComponent(innerPane, "main");
             setComponent(root, "root");
         }
     }
@@ -183,7 +177,7 @@ public abstract class Module {
             //si le contenu de la fenced est en vrac, on le wrap dans un mrow. On fait de même si le childNode est un textNode. Sinon, erreur !
             Element fenced = (mathElement.childNodeSize()==1&&mathElement.children().size()==1) ? mathElement.child(0) : Jsoup.parse("<mrow></mrow>").select("mrow").first().html(mathElement.html());
             JMathDisplayer innerPane = new JMathDisplayer(fenced, parent);
-            setComponent(innerPane, "fenced");
+            setComponent(innerPane, "main");
         }
     }
     /** Handle a hat: <munderover><mrow>x</mrow><mo>^</mo><mo>^</mo></munderover> **/

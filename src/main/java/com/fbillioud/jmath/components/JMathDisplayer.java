@@ -184,13 +184,13 @@ public class JMathDisplayer extends JPanel implements MathComponent {
             case "mtr" :
             case "mtd" :
             case "mtext" :
+            case "math" :
             case "mn" :
             case "mi" : m = new ModuleRow(mathElement, this); break;
             case "mo" : 
                 if(mathElement.text().trim().equals("{")) {m = new ModuleFenceOperator(mathElement, this);}
                 else {m = new ModuleRow(mathElement, this);}
                 break;
-            case "math" : m = new ModuleRow(mathElement, this); break;
             default: m = new Module(new Element(Tag.valueOf("math"),""), this, null) {
                 @Override
                 public void paintLines(Graphics2D g) {}

@@ -212,7 +212,7 @@ public abstract class MathLayout implements LayoutManager2 {
         
         @Override
         public void addLayoutComponent(String name, Component comp) {
-            if((innerPane==null&&!"root".equals(name))||"rootedPane".equals(name)) innerPane=comp; else root = comp;
+            if((innerPane==null&&!"root".equals(name))||"main".equals(name)) innerPane=comp; else root = comp;
         }
         @Override
         public void removeLayoutComponent(Component comp) {if(innerPane==comp) innerPane=null; else if(root==comp) root = null;}
@@ -268,7 +268,7 @@ public abstract class MathLayout implements LayoutManager2 {
     }
     public static class SQRTLayout extends RootLayout {
         @Override
-        public void addLayoutComponent(String name, Component comp) {super.addLayoutComponent("rootedPane", comp);}
+        public void addLayoutComponent(String name, Component comp) {super.addLayoutComponent("main", comp);}
     }
     
     public static class UnderOverLayout extends MathLayout {
