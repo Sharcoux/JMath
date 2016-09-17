@@ -78,6 +78,7 @@ public abstract class Module {
         support.add(comp, name);
         mathComponents.add(comp);
         support.invalidate();
+        comp.setName(name);
         
         DispatchMouseToParent l = new DispatchMouseToParent();
         comp.addMouseListener(l);
