@@ -52,6 +52,8 @@ public class JMathDisplayer extends JPanel implements MathComponent {
     public JMathDisplayer() {this("<math xmlns=\"http://www.w3.org/1998/Math/MathML\"></math>");}
     /** Display this mathML string **/
     public JMathDisplayer(String mathML) {this(Jsoup.parse(mathML).body().child(0), null);}
+    /** Display the MathML contained in this Jsoup Element **/
+    public JMathDisplayer(Element mathML) {this(mathML, null);}
 
     /** 
      * Create a Panel that will display the content of this Jsoup element
