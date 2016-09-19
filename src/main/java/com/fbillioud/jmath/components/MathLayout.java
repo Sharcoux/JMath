@@ -22,6 +22,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.LayoutManager2;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -137,15 +138,18 @@ public abstract class MathLayout implements LayoutManager2 {
         
         @Override
         protected Dimension layoutSize(Container target, SIZE size) {
-            return relativeRow(target,size).getSize();
+            Insets margins = target.getInsets();
+            Dimension d = relativeRow(target, size).getSize();
+            return new Dimension(d.width+margins.left+margins.right, d.height+margins.top+margins.bottom);
         }
 
         @Override
         protected void layoutContainer(Container target, int offsetX, int offsetY) {
+            Insets margins = target.getInsets();
             int x=offsetX;
             int baseLine = -relativeRow(target,SIZE.PREFERRED).y;
             for(Component c : target.getComponents()) {
-                c.setLocation(x,offsetY+baseLine-(int)(c.getAlignmentY()*c.getHeight()));
+                c.setLocation(margins.left+x,margins.top+offsetY+baseLine-(int)(c.getAlignmentY()*c.getHeight()));
                 x+=c.getWidth();
             }
         }
