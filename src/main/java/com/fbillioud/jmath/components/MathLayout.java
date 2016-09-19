@@ -51,7 +51,7 @@ public abstract class MathLayout implements LayoutManager2 {
         return d;
     }
     
-    void paintLines(Graphics2D g, Container target) {
+    public void paintLines(Graphics2D g, Container target) {
         Dimension d = layoutSize(target, SIZE.CURRENT);
         int x = (target.getWidth()-d.width)/2;
         int y = (target.getHeight()-d.height)/2;
