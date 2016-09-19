@@ -288,7 +288,7 @@ public abstract class Module {
             Element fence = mathElement;
             ((MathLayout.FenceOperatorLayout)getLayout()).setBracket(fence.text().trim().charAt(0));
             //HACK : we use the sibling to create a fake JMathDisplayer that will give us the correct height for the fence
-            Element object = (Element)mathElement.nextSibling();
+            Element object = mathElement.nextElementSibling();
             JMathDisplayer objectPane = new JMathDisplayer(object, parent);
             setComponent(objectPane, "main");
         }
