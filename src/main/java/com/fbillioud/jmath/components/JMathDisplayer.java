@@ -115,8 +115,8 @@ public class JMathDisplayer extends JPanel implements MathComponent {
     @Override
     public void setFont(Font f) {
         if(isScaleRatioSet()) f = f.deriveFont(f.getSize2D()*ratio);
-        super.setFont(f);
         for(Component c : getComponents()) {c.setFont(f);}
+        super.setFont(f);
     }
     
     @Override

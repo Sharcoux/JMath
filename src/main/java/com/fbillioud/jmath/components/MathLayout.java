@@ -66,7 +66,7 @@ public abstract class MathLayout implements LayoutManager2 {
     public void layoutContainer(Container target) {
         for(Component c : target.getComponents()) {
             c.setSize(c.getPreferredSize());
-//            c.doLayout();
+            c.doLayout();
         }
         Dimension d = layoutSize(target, SIZE.PREFERRED);
         int x = (target.getWidth()-d.width)/2;
@@ -99,9 +99,7 @@ public abstract class MathLayout implements LayoutManager2 {
     }
 
     @Override
-    public void invalidateLayout(Container target) {
-        for(Component c : target.getComponents()) {c.doLayout();}
-    }
+    public void invalidateLayout(Container target) {}
     @Override
     public Dimension maximumLayoutSize(Container target) {return preferredLayoutSize(target);}
     @Override
