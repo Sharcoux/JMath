@@ -15,7 +15,6 @@
  */
 package com.fbillioud.jmath.components;
 
-import com.fbillioud.jmath.DispatchMouseToParent;
 import com.fbillioud.jmath.DrawShape;
 import com.fbillioud.jmath.JsoupTools;
 import com.fbillioud.jmath.MathComponent;
@@ -73,11 +72,6 @@ public abstract class Module {
         support.add(comp, name);
         support.invalidate();
         comp.setName(name);
-        
-        DispatchMouseToParent l = new DispatchMouseToParent();
-        comp.addMouseListener(l);
-        comp.addMouseMotionListener(l);
-        comp.addMouseWheelListener(l);
     }
 
     /** Set the layout that position the children **/
