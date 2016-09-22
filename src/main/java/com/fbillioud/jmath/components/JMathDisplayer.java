@@ -31,7 +31,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Tag;
 
@@ -51,7 +50,7 @@ public class JMathDisplayer extends JPanel implements MathComponent {
     /** Create an empty JMathDisplayer **/
     public JMathDisplayer() {this("<math xmlns=\"http://www.w3.org/1998/Math/MathML\"></math>");}
     /** Display this mathML string **/
-    public JMathDisplayer(String mathML) {this(Jsoup.parse(mathML).body().child(0), null);}
+    public JMathDisplayer(String mathML) {this(JsoupTools.parse(mathML).body().child(0), null);}
     /** Display the MathML contained in this Jsoup Element **/
     public JMathDisplayer(Element mathML) {this(mathML, null);}
 
@@ -88,7 +87,7 @@ public class JMathDisplayer extends JPanel implements MathComponent {
     public void setMathML(String mathml) {
         try {
             removeAll();
-            setMathElement(Jsoup.parse(mathml).body().child(0));
+            setMathElement(JsoupTools.parse(mathml).body().child(0));
         } catch (MathMLParsingException ex) {
             Logger.getLogger(JMathDisplayer.class.getName()).log(Level.SEVERE, null, ex);
         }

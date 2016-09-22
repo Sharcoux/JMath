@@ -23,7 +23,9 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.text.StyleConstants;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 
@@ -32,6 +34,12 @@ import org.jsoup.nodes.Node;
  * @author François Billioud
  */
 public abstract class JsoupTools {
+
+    /** Makes sure that no unrequired spaces are added by Jsoup. **/
+    public static Document parse(String html) {
+        return Jsoup.parse(html).outputSettings(new org.jsoup.nodes.Document.OutputSettings().prettyPrint(false));
+    }
+    
     
     /**
      * permet de décomposer la partie "style" du html en couple objet/valeur

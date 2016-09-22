@@ -17,13 +17,13 @@ package com.fbillioud.jmath.components;
 
 import com.fbillioud.jmath.DispatchMouseToParent;
 import com.fbillioud.jmath.DrawShape;
+import com.fbillioud.jmath.JsoupTools;
 import com.fbillioud.jmath.MathComponent;
 import com.fbillioud.jmath.MathComponent.MathMLParsingException;
 import java.awt.Graphics2D;
 import java.awt.LayoutManager;
 import java.util.LinkedList;
 import javax.swing.JComponent;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
@@ -140,7 +140,7 @@ public abstract class Module {
         public ModuleSqrt(Element mathElement, JComponent parent) {
             super(mathElement, parent, new MathLayout.SQRTLayout());
             //si le contenu de la racine est en vrac, on le wrap dans un mrow. On fait de même si le childNode est un textNode. Sinon, erreur !
-            Element innerSqrt = (mathElement.childNodeSize()==1&&mathElement.children().size()==1) ? mathElement.child(0) : Jsoup.parse("<mrow></mrow>").select("mrow").first().html(mathElement.html());
+            Element innerSqrt = (mathElement.childNodeSize()==1&&mathElement.children().size()==1) ? mathElement.child(0) : JsoupTools.parse("<mrow></mrow>").select("mrow").first().html(mathElement.html());
             JMathDisplayer innerPane = new JMathDisplayer(innerSqrt, parent);
             setComponent(innerPane, "main");
         }
@@ -175,7 +175,7 @@ public abstract class Module {
                 else {fencedLayout.setBracket(mathElement.attr("open").trim().charAt(0),false);}
             }
             //si le contenu de la fenced est en vrac, on le wrap dans un mrow. On fait de même si le childNode est un textNode. Sinon, erreur !
-            Element fenced = (mathElement.childNodeSize()==1&&mathElement.children().size()==1) ? mathElement.child(0) : Jsoup.parse("<mrow></mrow>").select("mrow").first().html(mathElement.html());
+            Element fenced = (mathElement.childNodeSize()==1&&mathElement.children().size()==1) ? mathElement.child(0) : JsoupTools.parse("<mrow></mrow>").select("mrow").first().html(mathElement.html());
             JMathDisplayer innerPane = new JMathDisplayer(fenced, parent);
             setComponent(innerPane, "main");
         }
