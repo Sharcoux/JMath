@@ -43,7 +43,7 @@ You can now import the artefact as usual:
 		    <dependency>
 			    <groupId>com.fbillioud</groupId>
 			    <artifactId>jmath</artifactId>
-			    <version>1.0.5</version>
+			    <version>1.0.6</version>
 		    </dependency>
 		    ...
         </dependencies>
