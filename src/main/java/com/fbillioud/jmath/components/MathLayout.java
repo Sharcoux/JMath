@@ -84,7 +84,7 @@ public abstract class MathLayout implements LayoutManager2 {
 
     @Override
     public void addLayoutComponent(Component comp, Object constraints) {
-        addLayoutComponent(constraints.toString(), comp);
+        addLayoutComponent(constraints+"" , comp);
     }
 
     @Override
