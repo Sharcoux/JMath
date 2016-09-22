@@ -456,7 +456,8 @@ public abstract class MathLayout implements LayoutManager2 {
     }
     
     public static class FenceOperatorLayout extends MathLayout {
-        private Component fakePane;
+        /** Sibling used for sizing the fence **/
+        private Component siblingPane;
         private DrawShape fenceShape = DrawShape.get('(', DrawShape.LEFT);
 
         public FenceOperatorLayout() {}
@@ -468,6 +469,10 @@ public abstract class MathLayout implements LayoutManager2 {
             this.fenceShape = DrawShape.get(bracket);
         }
         
+        public void setSiblingPane(Component sibling) {
+            this.siblingPane = sibling;
+        }
+        
         @Override
         void paintLines(Graphics2D g, Container target, int x, int y) {
             int margin = getLineWidth(g);
@@ -475,22 +480,22 @@ public abstract class MathLayout implements LayoutManager2 {
         }
 
         @Override
-        public void addLayoutComponent(String name, Component comp) {this.fakePane = comp;comp.setVisible(false);}
+        public void addLayoutComponent(String name, Component comp) {this.siblingPane = comp;comp.setVisible(false);}
         @Override
-        public void removeLayoutComponent(Component comp) {if(comp==this.fakePane) {this.fakePane=null;comp.setVisible(true);}}
+        public void removeLayoutComponent(Component comp) {if(comp==this.siblingPane) {this.siblingPane=null;comp.setVisible(true);}}
         @Override
         public void layoutContainer(Container target, int x, int y) {
-            if(fakePane!=null) fakePane.setSize(fakePane.getPreferredSize());//Ne sera pas fait par le target car n'appartient pas au target.
+            if(siblingPane!=null) siblingPane.setSize(siblingPane.getPreferredSize());//Ne sera pas fait par le target car n'appartient pas au target.
         }
         @Override
         public Dimension layoutSize(Container target, SIZE size) {
-            Dimension fake = getSize(fakePane, size);
+            Dimension fake = getSize(siblingPane, size);
             if(fenceShape==null) return new Dimension();
             return new Dimension(fenceShape.getWidth(fake.height), fake.height);
         }
         @Override
         protected float layoutYAlignment(Container target, float lineHeight, float height) {
-            if(fakePane!=null) {fakePane.doLayout();return fakePane.getAlignmentY();}
+            if(siblingPane!=null) {siblingPane.doLayout();return siblingPane.getAlignmentY();}
             return lineHeight/height;
         }
     }
