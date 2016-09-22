@@ -222,28 +222,28 @@ public abstract class MathLayout implements LayoutManager2 {
         public void removeLayoutComponent(Component comp) {if(innerPane==comp) innerPane=null; else if(root==comp) root = null;}
         
         /** Reference used to calculate other dimensions. **/
-        private float getReferenceWidth() {return innerPane==null ? 0 : innerPane.getFont().getSize()/2f;}
+        private float getReferenceWidth(Component target) {return target.getFont().getSize()/2f;}
         /** The width of the V part of the root. **/
-        private float getVRootWidth() {return root==null ? getReferenceWidth() : Math.max(getReferenceWidth(), root.getPreferredSize().width);}//largeur utilisée pour dessiner le V de la racine
+        private float getVRootWidth(Component target) {return root==null ? getReferenceWidth(target) : Math.max(getReferenceWidth(target), root.getPreferredSize().width);}//largeur utilisée pour dessiner le V de la racine
         /** The width of the left little arm of the root. **/
-        private float getRootArmWidth() {return getReferenceWidth()/5f;}
+        private float getRootArmWidth(Component target) {return getReferenceWidth(target)/5f;}
         /** The padding around the innerPane. **/
-        private float getPadding() {return getReferenceWidth()/8f;}
+        private float getPadding(Component target) {return getReferenceWidth(target)/8f;}
         
         @Override
         public void paintLines(Graphics2D g, Container target, int x, int y) {
             if(innerPane==null) {return;}
             int margin = getLineWidth(g);
             Rectangle bounds = innerPane.getBounds();
-            float arm = getRootArmWidth();
-            float halfRoot = (getVRootWidth()-margin)/2;
+            float arm = getRootArmWidth(target);
+            float halfRoot = (getVRootWidth(target)-margin)/2;
             int offset = x+margin;
 //            int h = (int) (bounds.height/2+arm)+y;
-            int lineHeight = target.getFontMetrics(target.getFont()).getAscent();
-            int h = (int) (bounds.height*innerPane.getAlignmentY()+getPadding()+arm-lineHeight/3f)+y;
+            int lineHeight = target.getFontMetrics(innerPane.getFont()).getAscent();
+            int h = (int) (bounds.height*innerPane.getAlignmentY()+getPadding(target)+arm-lineHeight/3f)+y;
 
             int[] xPoints = {offset, (offset+=arm), offset+=halfRoot, offset+=halfRoot, offset+=(bounds.width-margin)};
-            int[] yPoints = {h, h-=arm, target.getHeight()-(int)(getVRootWidth()/3)-y, y+margin, y+margin};
+            int[] yPoints = {h, h-=arm, target.getHeight()-(int)(getVRootWidth(target)/3)-y, y+margin, y+margin};
             g.drawPolyline(xPoints, yPoints, 5);
         }
         
@@ -251,13 +251,13 @@ public abstract class MathLayout implements LayoutManager2 {
         protected Dimension layoutSize(Container target, SIZE size) {
             if(innerPane==null) {return new Dimension();}
             Dimension inner = getSize(innerPane, size);
-            return new Dimension((int)(inner.width+getRootArmWidth()+getVRootWidth()), (int)(inner.height+getPadding()*2));
+            return new Dimension((int)(inner.width+getRootArmWidth(target)+getVRootWidth(target)), (int)(inner.height+getPadding(target)*2));
         }
 
         @Override
         public void layoutContainer(Container target, int x, int y) {
             if(innerPane==null) {return;}
-            innerPane.setLocation((int)(x+getRootArmWidth()+getVRootWidth()),y+(int)getPadding());
+            innerPane.setLocation((int)(x+getRootArmWidth(target)+getVRootWidth(target)),y+(int)getPadding(target));
             if(root!=null) {
                 float lineHeight = target.getFontMetrics(target.getFont()).getAscent();
                 root.setLocation(x, (int)(y+innerPane.getHeight()*innerPane.getAlignmentY()-lineHeight/3-root.getHeight()));
@@ -266,7 +266,7 @@ public abstract class MathLayout implements LayoutManager2 {
         
         @Override
         protected float layoutYAlignment(Container target, float lineHeight, float height) {
-            return innerPane == null ? 0f : (innerPane.getAlignmentY()*innerPane.getHeight()+getPadding())/height;
+            return innerPane == null ? 0f : (innerPane.getAlignmentY()*innerPane.getHeight()+getPadding(target))/height;
         }
         
     }
