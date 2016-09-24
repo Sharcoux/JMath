@@ -89,14 +89,25 @@ public abstract class Module {
         public ModuleRow(Element rowElement, JComponent parent) {
             super(rowElement, parent, new MathLayout.RowLayout());
             int name = 0;
+            boolean space = false;          //at least one space has been encountered since last meaningful object
+            boolean meaningful = false;     //at least one meaningful object has been encountered
             for(Node node : rowElement.childNodes()) {
                 if(node instanceof TextNode) {
                     String content = ((TextNode)node).text().trim();
+                    boolean spacing = content.isEmpty();
+                    if(spacing) {space = true; continue;}
+                    else if(meaningful && space) {content+=" "; space = false;}
                     JMathLabel text = new JMathLabel(content);
                     if(rowElement.nodeName().equals("mi")) {text.setItalic(true);}
                     text.setForeground(parent.getForeground());
                     setComponent(text, ""+name++);
+                    meaningful = true;
                 } else if(node instanceof Element) {
+                    if(space && meaningful) {
+                        JMathLabel text = new JMathLabel(" ");
+                        setComponent(text, ""+name++);
+                        space = false;
+                    }
                     Element e = (Element) node;
                     if(JMathDisplayer.isModuleAvailable(e)) {
                         JMathDisplayer newElement = new JMathDisplayer(e,parent);
@@ -105,8 +116,17 @@ public abstract class Module {
                         JMathDisplayer newElement = new JMathDisplayer(e.tagName("mrow"),parent);
                         setComponent(newElement, ""+name++);
                     }
+                    meaningful = true;
                 }
             }
+            //Case of an empty node
+            if(space && !meaningful) {
+                JMathLabel text = new JMathLabel(" ");
+                setComponent(text, ""+name++);
+            }
+        }
+        private void insertSpace() {
+            
         }
     }
     
