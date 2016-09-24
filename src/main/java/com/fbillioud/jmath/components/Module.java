@@ -91,10 +91,9 @@ public abstract class Module {
             int name = 0;
             for(Node node : rowElement.childNodes()) {
                 if(node instanceof TextNode) {
-                    String content = ((TextNode)node).text();
-                    if(rowElement.nodeName().equals("mi")) {content = "<i>"+content+"</i>";}
-                    content = "<html>"+content+"</html>";
+                    String content = ((TextNode)node).text().trim();
                     JMathLabel text = new JMathLabel(content);
+                    if(rowElement.nodeName().equals("mi")) {text.setItalic(true);}
                     text.setForeground(parent.getForeground());
                     setComponent(text, ""+name++);
                 } else if(node instanceof Element) {

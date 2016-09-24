@@ -16,7 +16,7 @@
 package com.fbillioud.jmath.components;
 
 import com.fbillioud.jmath.MathComponent;
-import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.font.LineMetrics;
 import javax.swing.JLabel;
 
@@ -35,6 +35,11 @@ public class JMathLabel extends JLabel implements MathComponent {
     public float getFontSize() {return getFont().getSize();}
     @Override
     public void setFontSize(float size) { setFont(getFont().deriveFont(size)); }
+    
+    @Override
+    public void setFont(Font font) {
+        super.setFont(isItalic() ? font.deriveFont(Font.ITALIC) : font);
+    }
 
     @Override
     public float getAlignmentY() {
@@ -42,12 +47,7 @@ public class JMathLabel extends JLabel implements MathComponent {
         return (fm.getAscent())/fm.getHeight();
     }
     
-    public boolean isItalic() {return getText().contains("<i>");}
+    public boolean isItalic() {return getFont()==null ? false : getFont().isItalic();}
+    public void setItalic(boolean b) {setFont(getFont().deriveFont(b ? Font.ITALIC : Font.PLAIN));}
     
-    @Override
-    public Dimension getPreferredSize() {
-        Dimension d = super.getPreferredSize();
-        if(isItalic()) {return new Dimension(d.width+2,d.height);}//HACK to display italic text within bounds
-        return d;
-    }
 }
