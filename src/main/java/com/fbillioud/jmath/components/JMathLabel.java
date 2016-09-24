@@ -16,6 +16,7 @@
 package com.fbillioud.jmath.components;
 
 import com.fbillioud.jmath.MathComponent;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.font.LineMetrics;
 import javax.swing.JLabel;
@@ -49,5 +50,14 @@ public class JMathLabel extends JLabel implements MathComponent {
     
     public boolean isItalic() {return getFont()==null ? false : getFont().isItalic();}
     public void setItalic(boolean b) {setFont(getFont().deriveFont(b ? Font.ITALIC : Font.PLAIN));}
+    
+    public Dimension getPreferredSize() {
+        if(!isItalic()) return super.getPreferredSize();
+        else {
+            Dimension d = super.getPreferredSize();
+            d.width+=2;
+            return d;
+        }
+    }
     
 }
