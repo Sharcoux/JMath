@@ -88,6 +88,7 @@ public class JMathDisplayer extends JPanel implements MathComponent {
         try {
             removeAll();
             setMathElement(JsoupTools.parse(mathml).body().child(0));
+            doLayout();
         } catch (MathMLParsingException ex) {
             Logger.getLogger(JMathDisplayer.class.getName()).log(Level.SEVERE, null, ex);
         }
