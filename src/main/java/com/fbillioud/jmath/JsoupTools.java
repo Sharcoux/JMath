@@ -55,6 +55,18 @@ public abstract class JsoupTools {
         return map;
     }
 
+    
+    /**
+     * Clone Element with its output settings
+     * @param element the original element
+     * @return a clone of the element with the output settings of the original element
+     */
+    public static Element clone(Element element) {
+        Element elt = Jsoup.parse(element.outerHtml()).body().child(0);
+        elt.ownerDocument().outputSettings(element.ownerDocument().outputSettings().clone());
+        return elt;
+    }
+    
     /**
      * permet de lire une propriété de style de l'objet e.
      * Le style est cherché dans les attributs html ET dans l'attribut "style"
