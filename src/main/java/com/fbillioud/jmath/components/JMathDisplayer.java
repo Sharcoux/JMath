@@ -45,7 +45,7 @@ public class JMathDisplayer extends JPanel implements MathComponent {
     /** The MathModule that will represente the element **/
     private Module module;
     /** The foreground color of this element if not inherited **/
-    private Color foreground;
+    protected Color foreground;
 
     /** Create an empty JMathDisplayer **/
     public JMathDisplayer() {this("<math xmlns=\"http://www.w3.org/1998/Math/MathML\"></math>");}
@@ -87,6 +87,7 @@ public class JMathDisplayer extends JPanel implements MathComponent {
     public void setMathML(String mathml) {
         try {
             removeAll();
+            foreground = null;
             setMathElement(JsoupTools.parse(mathml).body().child(0));
             doLayout();
         } catch (MathMLParsingException ex) {
@@ -109,8 +110,10 @@ public class JMathDisplayer extends JPanel implements MathComponent {
     
     @Override
     public void setForeground(Color color) {
-        if(foreground==null) {super.setForeground(color);}//We don't override the mathML color attribute
-        if(module!=null) for(Component c : getComponents()) {c.setForeground(color);}
+        if(foreground==null) {//We don't override the mathML color attribute
+            super.setForeground(color);
+            if(module!=null) for(Component c : getComponents()) {c.setForeground(color);}
+        }
     }
     
     @Override
@@ -200,7 +203,7 @@ public class JMathDisplayer extends JPanel implements MathComponent {
         this.module = m;
         
         Color color = JsoupTools.getColor(mathElement);
-        if(color!=null) {foreground = color;super.setForeground(color);}
+        if(color!=null) {setForeground(color);foreground = color;}
     }
     
     /**

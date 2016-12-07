@@ -99,7 +99,7 @@ public abstract class Module {
                     else if(meaningful && space) {content+=" "; space = false;}
                     JMathLabel text = new JMathLabel(content);
                     if(rowElement.nodeName().equals("mi")) {text.setItalic(true);}
-                    text.setForeground(parent.getForeground());
+                    text.setForeground(JsoupTools.getColor(rowElement));
                     setComponent(text, ""+name++);
                     meaningful = true;
                 } else if(node instanceof Element) {
@@ -109,13 +109,14 @@ public abstract class Module {
                         space = false;
                     }
                     Element e = (Element) node;
+                    JMathDisplayer newElement;
                     if(JMathDisplayer.isModuleAvailable(e)) {
-                        JMathDisplayer newElement = new JMathDisplayer(e,parent);
-                        setComponent(newElement, ""+name++);
+                        newElement = new JMathDisplayer(e,parent);
                     } else {
-                        JMathDisplayer newElement = new JMathDisplayer(e.tagName("mrow"),parent);
-                        setComponent(newElement, ""+name++);
+                        newElement = new JMathDisplayer(e.tagName("mrow"),parent);
                     }
+                    newElement.setForeground(JsoupTools.getColor(e));
+                    setComponent(newElement, ""+name++);
                     meaningful = true;
                 }
             }
@@ -124,9 +125,6 @@ public abstract class Module {
                 JMathLabel text = new JMathLabel(" ");
                 setComponent(text, ""+name++);
             }
-        }
-        private void insertSpace() {
-            
         }
     }
     
