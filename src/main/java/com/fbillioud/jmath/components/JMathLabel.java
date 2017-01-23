@@ -39,7 +39,7 @@ public class JMathLabel extends JLabel implements MathComponent {
     
     @Override
     public void setFont(Font font) {
-        super.setFont(isItalic() ? font.deriveFont(Font.ITALIC) : font);
+        super.setFont(isItalic() ? font.deriveFont(Font.ITALIC+(font.isBold() ? Font.BOLD : 0)) : font);
     }
 
     @Override
