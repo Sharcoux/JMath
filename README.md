@@ -38,6 +38,7 @@ The steps to getting in the Maven Central repository are quite troublesome, so, 
         </repositories>
 
 You can now import the artefact as usual:
+
 	    <dependencies>
 	        ...
 		    <dependency>
