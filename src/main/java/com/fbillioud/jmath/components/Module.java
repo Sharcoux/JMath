@@ -245,7 +245,7 @@ public abstract class Module {
         }
         protected final void createIndex(Element iElement, JComponent owner, String name) {
             JMathDisplayer iPane = new JMathDisplayer(iElement, owner);
-            iPane.setScaleRatio(0.5f);
+            iPane.setScaleRatio(0.6f);
             iPane.setFontSize(iPane.getFontSize());
             setComponent(iPane, name);
         }
