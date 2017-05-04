@@ -59,7 +59,12 @@ public abstract class MathLayout implements LayoutManager2 {
     }
     abstract void paintLines(Graphics2D g, Container target, int x, int y);
     
-    protected abstract Dimension layoutSize(Container target, SIZE size);
+    protected abstract Dimension layoutSizeNoMargin(Container target, SIZE size);
+    protected Dimension layoutSize(Container target, SIZE size) {
+        Dimension d = layoutSizeNoMargin(target, size);
+        Insets insets = target.getInsets();
+        return new Dimension(d.width+insets.left+insets.right, d.height+insets.top+insets.bottom);
+    }
     protected abstract void layoutContainer(Container target, int offsetX, int offsetY);
     protected abstract float layoutYAlignment(Container target, float lineHeight, float height);
     @Override
@@ -69,8 +74,8 @@ public abstract class MathLayout implements LayoutManager2 {
             c.doLayout();
         }
         Dimension d = layoutSize(target, SIZE.PREFERRED);
-        int x = (target.getWidth()-d.width)/2;
-        int y = (target.getHeight()-d.height)/2;
+        int x = (target.getWidth()-d.width)/2+target.getInsets().left;
+        int y = (target.getHeight()-d.height)/2+target.getInsets().top;
         layoutContainer(target, x, y);
 //        if(target instanceof JComponent) {
 //            FontMetrics fm = target.getFontMetrics(target.getFont());
@@ -135,19 +140,16 @@ public abstract class MathLayout implements LayoutManager2 {
         }
         
         @Override
-        protected Dimension layoutSize(Container target, SIZE size) {
-            Insets margins = target.getInsets();
-            Dimension d = relativeRow(target, size).getSize();
-            return new Dimension(d.width+margins.left+margins.right, d.height+margins.top+margins.bottom);
+        protected Dimension layoutSizeNoMargin(Container target, SIZE size) {
+            return relativeRow(target, size).getSize();
         }
 
         @Override
         protected void layoutContainer(Container target, int offsetX, int offsetY) {
-            Insets margins = target.getInsets();
             int x=offsetX;
             int baseLine = -relativeRow(target,SIZE.PREFERRED).y;
             for(Component c : target.getComponents()) {
-                c.setLocation(margins.left+x,margins.top+offsetY+baseLine-(int)(c.getAlignmentY()*c.getHeight()));
+                c.setLocation(x,offsetY+baseLine-(int)(c.getAlignmentY()*c.getHeight()));
                 x+=c.getWidth();
             }
         }
@@ -185,7 +187,7 @@ public abstract class MathLayout implements LayoutManager2 {
         }
         
         @Override
-        protected Dimension layoutSize(Container target, SIZE size) {
+        protected Dimension layoutSizeNoMargin(Container target, SIZE size) {
             Dimension num = getSize(numerator, size);
             Dimension den = getSize(denominator, size);
             int width = Math.max(num.width, den.width);
@@ -246,7 +248,7 @@ public abstract class MathLayout implements LayoutManager2 {
         }
         
         @Override
-        protected Dimension layoutSize(Container target, SIZE size) {
+        protected Dimension layoutSizeNoMargin(Container target, SIZE size) {
             if(innerPane==null) {return new Dimension();}
             Dimension inner = getSize(innerPane, size);
             return new Dimension((int)(inner.width+getRootArmWidth(target)+getVRootWidth(target)), (int)(inner.height+getPadding(target)*2));
@@ -320,7 +322,7 @@ public abstract class MathLayout implements LayoutManager2 {
             else if(overPane==comp) overPane = null;
         }
         @Override
-        protected Dimension layoutSize(Container target, SIZE size) {
+        protected Dimension layoutSizeNoMargin(Container target, SIZE size) {
             Dimension inner = getSize(innerPane, size);
             return new Dimension(inner.width, inner.height+getOverHeight()+getUnderHeight());
         }
@@ -365,7 +367,7 @@ public abstract class MathLayout implements LayoutManager2 {
             else if(comp==this.postSupPane) {this.postSupPane=null;}
         }
         @Override
-        protected Dimension layoutSize(Container target, SIZE size) {
+        protected Dimension layoutSizeNoMargin(Container target, SIZE size) {
             Dimension core = getSize(corePane, size);
             Dimension preSub = getSize(preSubPane, size);
             Dimension preSup = getSize(preSupPane, size);
@@ -432,7 +434,7 @@ public abstract class MathLayout implements LayoutManager2 {
         @Override
         public void removeLayoutComponent(Component comp) {if(comp==this.innerPane) {this.innerPane=null;}}
         @Override
-        protected Dimension layoutSize(Container target, SIZE size) {
+        protected Dimension layoutSizeNoMargin(Container target, SIZE size) {
             int innerPadding = getInnerPadding();
             Dimension inner = getSize(innerPane, size);
             int lWidth = leftBracket==null ? 0 : leftBracket.getWidth(inner.height);
@@ -486,7 +488,7 @@ public abstract class MathLayout implements LayoutManager2 {
             if(siblingPane!=null) siblingPane.setSize(siblingPane.getPreferredSize());//Ne sera pas fait par le target car n'appartient pas au target.
         }
         @Override
-        public Dimension layoutSize(Container target, SIZE size) {
+        protected Dimension layoutSizeNoMargin(Container target, SIZE size) {
             Dimension fake = getSize(siblingPane, size);
             if(fenceShape==null) return new Dimension();
             return new Dimension(fenceShape.getWidth(fake.height), fake.height);
@@ -582,7 +584,7 @@ public abstract class MathLayout implements LayoutManager2 {
         }
 
         @Override
-        protected Dimension layoutSize(Container target, SIZE size) {
+        protected Dimension layoutSizeNoMargin(Container target, SIZE size) {
             LinkedList<Integer> widths = getColWidths(size), heights = getRowHeights(size);
             int W = widths.removeLast(), H = heights.removeLast();
             return new Dimension(W+(widths.size()+1)*colSpace, H+(heights.size()+1)*rowSpace);
