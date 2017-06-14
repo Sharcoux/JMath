@@ -134,9 +134,9 @@ public abstract class MathLayout implements LayoutManager2 {
         }
         @Override
         void paintLines(Graphics2D g, Container target, int x, int y) {
-            Dimension d = target.getSize();
+            Dimension d = layoutSizeNoMargin(target, SIZE.PREFERRED);
             int lw = getLineWidth();
-            int top = lw, left = lw, right = d.width-lw, bottom = d.height-lw;
+            int top = y+lw, left = x+lw, right = x+d.width-lw, bottom = y+d.height-lw;
             switch(notation) {
                 case "actuarial":
                     g.drawLine(left, top, right, top);
