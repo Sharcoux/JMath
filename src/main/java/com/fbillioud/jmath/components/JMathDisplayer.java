@@ -152,8 +152,8 @@ public class JMathDisplayer extends JPanel implements MathComponent {
     }
     
     @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    public void paint(Graphics g) {
+        super.paint(g);
         Graphics2D g2D = (Graphics2D)g;
         g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -190,6 +190,15 @@ public class JMathDisplayer extends JPanel implements MathComponent {
             case "math" :
             case "mn" :
             case "mi" : m = new ModuleRow(mathElement, this); break;
+            case "menclose" :
+                String notation = mathElement.attr("notation");
+                if("radical".equals(notation)) {
+                    mathElement.tagName("msqrt");
+                    m = new ModuleSqrt(mathElement, this);
+                } else {
+                    m = new ModuleEnclose(mathElement, this, notation);
+                }
+                break;
             case "mo" : 
                 if(mathElement.text().trim().equals("{") && mathElement.nextElementSibling()!=null) {m = new ModuleFenceOperator(mathElement, this);}
                 else {m = new ModuleRow(mathElement, this);}

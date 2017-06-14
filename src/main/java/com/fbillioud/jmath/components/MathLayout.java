@@ -51,16 +51,21 @@ public abstract class MathLayout implements LayoutManager2 {
         return d;
     }
     
+    private int lineWidth = -1;
+    protected int getLineWidth() {return lineWidth;}
+    
     public void paintLines(Graphics2D g, Container target) {
         Dimension d = layoutSize(target, SIZE.CURRENT);
         int x = (target.getWidth()-d.width)/2;
         int y = (target.getHeight()-d.height)/2;
+        lineWidth = getLineWidth(g);
         paintLines(g, target, x, y);
     }
     abstract void paintLines(Graphics2D g, Container target, int x, int y);
     
     protected abstract Dimension layoutSizeNoMargin(Container target, SIZE size);
     protected Dimension layoutSize(Container target, SIZE size) {
+        if(lineWidth<1) {lineWidth = getLineWidth(target);}
         Dimension d = layoutSizeNoMargin(target, size);
         Insets insets = target.getInsets();
         return new Dimension(d.width+insets.left+insets.right, d.height+insets.top+insets.bottom);
@@ -112,10 +117,69 @@ public abstract class MathLayout implements LayoutManager2 {
     @Override
     public Dimension minimumLayoutSize(Container target) {return layoutSize(target, SIZE.MIN);}
     
-    protected int getLineWidth(Graphics2D g) {
+    protected static int getLineWidth(Graphics2D g) {
+        if(g==null) return 1;
+        if(!(g.getStroke() instanceof BasicStroke)) {return 1;}
         return (int) ((BasicStroke)g.getStroke()).getLineWidth();
     }
+    protected static int getLineWidth(Component c) {
+        if(c==null) return 1;
+        return Math.max(c.getFont().getSize()/10,1);
+    }
     
+    public static class EncloseLayout extends RowLayout {
+        private final String notation;
+        public EncloseLayout(String notation) {
+            this.notation = notation;
+        }
+        @Override
+        void paintLines(Graphics2D g, Container target, int x, int y) {
+            Dimension d = target.getSize();
+            int lw = getLineWidth();
+            int top = lw, left = lw, right = d.width-lw, bottom = d.height-lw;
+            switch(notation) {
+                case "actuarial":
+                    g.drawLine(left, top, right, top);
+                    g.drawLine(right, top, right, bottom);
+                    break;
+                case "box": g.drawRect(left, top, d.width-2*lw, d.height-2*lw);break;
+                case "circle": g.drawOval(left, top, d.width-2*lw, d.height-2*lw);break;
+                case "roundedbox": g.drawRoundRect(left, top, d.width-2*lw, d.height-2*lw, 4*lw, 4*lw);break;
+                case "left": g.drawLine(left, top, left, bottom);break;
+                case "right": g.drawLine(right, top, right, bottom);break;
+                case "top": g.drawLine(left, top, right, top);break;
+                case "bottom": g.drawLine(left, bottom, right, bottom);break;
+                case "updiagonalstrike": g.drawLine(left, bottom, right, top); break;
+                case "downdiagonalstrike": g.drawLine(left, top, right, bottom); break;
+                case "verticalstrike": g.drawLine(d.width/2, top, d.width/2, bottom); break;
+                case "horizontalstrike": g.drawLine(left, d.height/2, right, d.height/2); break;
+                case "madruwb":
+                    g.drawLine(left, bottom, right, bottom);
+                    g.drawLine(right, top, right, bottom);
+                    break;
+            }
+        }
+
+        @Override
+        protected void layoutContainer(Container target, int offsetX, int offsetY) {
+            int lw = getLineWidth();
+            if("circle".equals(notation)) {
+                Dimension d = super.layoutSizeNoMargin(target, SIZE.PREFERRED);
+                Dimension d2 = layoutSizeNoMargin(target, SIZE.PREFERRED);
+                super.layoutContainer(target,offsetX+(d2.width-d.width)/2,offsetY+(d2.height-d.height)/2);
+                return;
+            }
+            super.layoutContainer(target, offsetX+2*lw, offsetY+2*lw);
+        }
+        
+        @Override
+        protected Dimension layoutSizeNoMargin(Container target, SIZE s) {
+            Dimension d = super.layoutSizeNoMargin(target, s);
+            int lw = getLineWidth();
+            if("circle".equals(notation)) {return new Dimension((int)((d.width+2*lw)*Math.sqrt(2)),(int)((d.height+2*lw)*Math.sqrt(2)));}
+            return new Dimension(d.width+4*lw,d.height+4*lw);
+        }
+    }
     public static class RowLayout extends MathLayout {
         LinkedList<Component> components = new LinkedList<>();
         @Override
@@ -127,7 +191,7 @@ public abstract class MathLayout implements LayoutManager2 {
          * @param size PREFERRED, MIN, MAX or CURRENT
          * @return the bounds of the target if all components where aligned on 0
          */
-        private Rectangle relativeRow(Container target, SIZE size) {
+        protected Rectangle relativeRow(Container target, SIZE size) {
             Rectangle r = new Rectangle(-1, -1);
             int x = 0;
             for(Component c : target.getComponents()) {
@@ -172,9 +236,7 @@ public abstract class MathLayout implements LayoutManager2 {
     }
     public static class FracLayout extends MathLayout {
         private Component numerator = null, denominator = null;
-        
-        private int getPadding(Component target) {return target.getFont().getSize()/8;}
-        
+
         @Override
         public void addLayoutComponent(String name, Component comp) {if((numerator==null && !"denominator".equals(name)) || "numerator".equals(name)) numerator = comp; else denominator = comp;}
         @Override
@@ -182,7 +244,7 @@ public abstract class MathLayout implements LayoutManager2 {
         @Override
         public void paintLines(Graphics2D g, Container target, int x,  int y) {
             if(numerator==null || denominator==null) return;
-            int margin = getLineWidth(g);
+            int margin = getLineWidth();
             g.drawLine(x+margin, numerator.getY()+numerator.getHeight(), target.getWidth()-margin-x, numerator.getY()+numerator.getHeight());
         }
         
@@ -192,14 +254,14 @@ public abstract class MathLayout implements LayoutManager2 {
             Dimension den = getSize(denominator, size);
             int width = Math.max(num.width, den.width);
             int height = num.height+den.height;
-            return new Dimension(width+2*getPadding(target), height);
+            return new Dimension(width+2*getLineWidth(), height);
         }
         
         @Override
         public void layoutContainer(Container target, int x, int y) {
             if(numerator==null || denominator==null) {return;}
             numerator.setLocation((target.getWidth()-numerator.getWidth())/2, y);
-            denominator.setLocation((target.getWidth()-denominator.getWidth())/2, y+numerator.getHeight());
+            denominator.setLocation((target.getWidth()-denominator.getWidth())/2, y+numerator.getHeight()+getLineWidth());
         }
         
         @Override
@@ -221,43 +283,41 @@ public abstract class MathLayout implements LayoutManager2 {
         @Override
         public void removeLayoutComponent(Component comp) {if(innerPane==comp) innerPane=null; else if(root==comp) root = null;}
         
-        /** Reference used to calculate other dimensions. **/
-        private float getReferenceWidth(Component target) {return target.getFont().getSize()/2f;}
         /** The width of the V part of the root. **/
-        private float getVRootWidth(Component target) {return root==null ? getReferenceWidth(target) : Math.max(getReferenceWidth(target), root.getPreferredSize().width);}//largeur utilisée pour dessiner le V de la racine
+        private float getVRootWidth(Container target) {return Math.max(target.getFont().getSize()/2f, root==null ? 1 : root.getPreferredSize().width);}//largeur utilisée pour dessiner le V de la racine
         /** The width of the left little arm of the root. **/
-        private float getRootArmWidth(Component target) {return getReferenceWidth(target)/5f;}
-        /** The padding around the innerPane. **/
-        private float getPadding(Component target) {return getReferenceWidth(target)/8f;}
+        private float getRootArmWidth(Container target) {return Math.max(target.getFont().getSize()/16f,getLineWidth());}
         
         @Override
         public void paintLines(Graphics2D g, Container target, int x, int y) {
             if(innerPane==null) {return;}
-            int margin = getLineWidth(g);
+            int lw = getLineWidth();
             Rectangle bounds = innerPane.getBounds();
             float arm = getRootArmWidth(target);
-            float halfRoot = (getVRootWidth(target)-margin)/2;
-            int offset = x+margin;
+            float halfRoot = getVRootWidth(target)/2;
+            int offset = x+lw;
 //            int h = (int) (bounds.height/2+arm)+y;
             int lineHeight = target.getFontMetrics(innerPane.getFont()).getAscent();
-            int h = (int) (bounds.height*innerPane.getAlignmentY()+getPadding(target)+arm-lineHeight/3f)+y;
+            int h = (int) (bounds.height*innerPane.getAlignmentY()+2*lw+arm-lineHeight/3f)+y;
 
-            int[] xPoints = {offset, (offset+=arm), offset+=halfRoot, offset+=halfRoot, offset+=(bounds.width-margin)};
-            int[] yPoints = {h, h-=arm, target.getHeight()-(int)(getVRootWidth(target)/3)-y, y+margin, y+margin};
+            int[] xPoints = {offset, (offset+=arm), offset+=halfRoot, offset+=halfRoot, offset+=(bounds.width-lw)};
+            int[] yPoints = {h, h-=arm, target.getHeight()-(int)(getVRootWidth(target)/3)-y, y+lw, y+lw};
             g.drawPolyline(xPoints, yPoints, 5);
         }
         
         @Override
         protected Dimension layoutSizeNoMargin(Container target, SIZE size) {
             if(innerPane==null) {return new Dimension();}
+            int lw = getLineWidth();
             Dimension inner = getSize(innerPane, size);
-            return new Dimension((int)(inner.width+getRootArmWidth(target)+getVRootWidth(target)), (int)(inner.height+getPadding(target)*2));
+            return new Dimension((int)(inner.width+getRootArmWidth(target)+getVRootWidth(target)+2*lw), inner.height+lw*3);
         }
 
         @Override
         public void layoutContainer(Container target, int x, int y) {
             if(innerPane==null) {return;}
-            innerPane.setLocation((int)(x+getRootArmWidth(target)+getVRootWidth(target)),y+(int)getPadding(target));
+            int lw = getLineWidth();
+            innerPane.setLocation((int)(x+2*lw+getRootArmWidth(target)+getVRootWidth(target)),y+lw*2);
             if(root!=null) {
                 float lineHeight = target.getFontMetrics(target.getFont()).getAscent();
                 root.setLocation(x, (int)(y+innerPane.getHeight()*innerPane.getAlignmentY()-lineHeight/3-root.getHeight()));
@@ -266,7 +326,7 @@ public abstract class MathLayout implements LayoutManager2 {
         
         @Override
         protected float layoutYAlignment(Container target, float lineHeight, float height) {
-            return innerPane == null ? 0f : (innerPane.getAlignmentY()*innerPane.getHeight()+getPadding(target))/height;
+            return innerPane == null ? 0f : (innerPane.getAlignmentY()*innerPane.getHeight()+2*getLineWidth())/height;
         }
         
     }
@@ -304,9 +364,9 @@ public abstract class MathLayout implements LayoutManager2 {
         @Override
         void paintLines(Graphics2D g, Container target, int x, int y) {
             if(innerPane==null) {return;}
-            int margin = getLineWidth(g);
-            if(underShape!=null) underShape.paint(g, x+margin, y+margin+innerPane.getHeight()+getOverHeight(), innerPane.getWidth()-2*margin, getUnderHeight());
-            if(overShape!=null) overShape.paint(g, x+margin, y+margin, innerPane.getWidth()-2*margin, getOverHeight());
+            int lw = getLineWidth();
+            if(underShape!=null) underShape.paint(g, x+lw, y+lw+innerPane.getHeight()+getOverHeight(), innerPane.getWidth()-2*lw, getUnderHeight());
+            if(overShape!=null) overShape.paint(g, x+lw, y+lw, innerPane.getWidth()-2*lw, getOverHeight());
         }
 
         @Override
@@ -423,10 +483,10 @@ public abstract class MathLayout implements LayoutManager2 {
         
         @Override
         void paintLines(Graphics2D g, Container target, int x, int y) {
-            int margin = getLineWidth(g);
+            int lw = getLineWidth();
             int width = target.getWidth(), height = target.getHeight();
-            if(leftBracket!=null) leftBracket.paint(g, x+margin, y+margin, height-2*margin);
-            if(rightBracket!=null) rightBracket.paint(g, width-rightBracket.getWidth(height-2*margin)-margin-x, y+margin, height-2*margin);
+            if(leftBracket!=null) leftBracket.paint(g, x+lw, y+lw, height-2*lw);
+            if(rightBracket!=null) rightBracket.paint(g, width-rightBracket.getWidth(height-2*lw)-lw-x, y+lw, height-2*lw);
         }
 
         @Override
@@ -475,8 +535,8 @@ public abstract class MathLayout implements LayoutManager2 {
         
         @Override
         void paintLines(Graphics2D g, Container target, int x, int y) {
-            int margin = getLineWidth(g);
-            if(fenceShape!=null) fenceShape.paint(g, x+margin, y+margin,target.getWidth()-2*margin, target.getHeight()-2*margin);
+            int lw = getLineWidth();
+            if(fenceShape!=null) fenceShape.paint(g, x+lw, y+lw,target.getWidth()-2*lw, target.getHeight()-2*lw);
         }
 
         @Override
@@ -556,10 +616,10 @@ public abstract class MathLayout implements LayoutManager2 {
         @Override
         void paintLines(Graphics2D g, Container target, int offsetX, int offsetY) {
             if(border) {
-                int line = getLineWidth(g);
-                int col = Math.max(colCellSpace, line);
+                int lw = getLineWidth();
+                int col = Math.max(colCellSpace, lw);
                 if(col!=colSpace) {colSpace=col; target.invalidate();}
-                int row = Math.max(rowCellSpace, line);
+                int row = Math.max(rowCellSpace, lw);
                 if(row!=rowSpace) {rowSpace=row; target.invalidate();}
                 
                 LinkedList<Integer> widths = getColWidths(SIZE.CURRENT), heights = getRowHeights(SIZE.CURRENT);

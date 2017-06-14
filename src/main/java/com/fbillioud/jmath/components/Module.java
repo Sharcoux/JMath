@@ -84,22 +84,21 @@ public abstract class Module {
         support.setAlignmentY(yAlignment);
     }
     
-    /** Handle a basic row: <mrow>x</mrow> **/
-    public static class ModuleRow extends Module {
-        public ModuleRow(Element rowElement, JComponent parent) {
-            super(rowElement, parent, new MathLayout.RowLayout());
+    public static abstract class MultipleChildrenModule extends Module {
+        public MultipleChildrenModule(Element element, JComponent parent, MathLayout layout) {
+            super(element, parent, layout);
             int name = 0;
             boolean space = false;          //at least one space has been encountered since last meaningful object
             boolean meaningful = false;     //at least one meaningful object has been encountered
-            for(Node node : rowElement.childNodes()) {
+            for(Node node : element.childNodes()) {
                 if(node instanceof TextNode) {
                     String content = ((TextNode)node).text().trim();
                     boolean spacing = content.isEmpty();
                     if(spacing) {space = true; continue;}
                     else if(meaningful && space) {content+=" "; space = false;}
                     JMathLabel text = new JMathLabel(content);
-                    if(rowElement.nodeName().equals("mi")) {text.setItalic(true);}
-                    text.setForeground(JsoupTools.getColor(rowElement));
+                    if(element.nodeName().equals("mi")) {text.setItalic(true);}
+                    text.setForeground(JsoupTools.getColor(element));
                     setComponent(text, ""+name++);
                     meaningful = true;
                 } else if(node instanceof Element) {
@@ -125,6 +124,18 @@ public abstract class Module {
                 JMathLabel text = new JMathLabel(" ");
                 setComponent(text, ""+name++);
             }
+        }
+    }
+    /** Handle a basic row: <mrow>x</mrow> **/
+    public static class ModuleRow extends MultipleChildrenModule {
+        public ModuleRow(Element rowElement, JComponent parent) {
+            super(rowElement, parent, new MathLayout.RowLayout());
+        }
+    }
+    /** Handle a basic menclose tags: <menclose notation="x">x</menclose> **/
+    public static class ModuleEnclose extends MultipleChildrenModule {
+        public ModuleEnclose(Element encloseElement, JComponent parent, String notation) {
+            super(encloseElement, parent, new MathLayout.EncloseLayout(notation));
         }
     }
     
@@ -182,8 +193,10 @@ public abstract class Module {
             if(mathElement.hasAttr("open")) {
                 MathLayout.FencedLayout fencedLayout = (MathLayout.FencedLayout) getLayout();
                 fencedLayout.setBracket(mathElement.attr("open").trim().charAt(0),true);
-                if(mathElement.hasAttr("close")) {fencedLayout.setBracket(mathElement.attr("close").trim().charAt(0),false);}
-                else {fencedLayout.setBracket(mathElement.attr("open").trim().charAt(0),false);}
+            }
+            if(mathElement.hasAttr("close")) {
+                MathLayout.FencedLayout fencedLayout = (MathLayout.FencedLayout) getLayout();
+                fencedLayout.setBracket(mathElement.attr("close").trim().charAt(0),false);
             }
             //si le contenu de la fenced est en vrac, on le wrap dans un mrow. On fait de même si le childNode est un textNode. Sinon, erreur !
             Element fenced = (mathElement.childNodeSize()==1&&mathElement.children().size()==1) ? mathElement.child(0) : JsoupTools.parse("<mrow></mrow>").select("mrow").first().html(mathElement.html());
