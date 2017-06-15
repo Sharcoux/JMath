@@ -223,6 +223,7 @@ public class JMathDisplayer extends JPanel implements MathComponent {
     public static boolean isModuleAvailable(Element mathElement) {
         String[] known = {
             "mrow",
+            "menclose",
             "mroot",
             "mfrac",
             "msqrt",
