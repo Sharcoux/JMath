@@ -44,13 +44,13 @@ You can now import the artefact as usual:
 		    <dependency>
 			    <groupId>com.fbillioud</groupId>
 			    <artifactId>jmath</artifactId>
-			    <version>1.0.16</version>
+			    <version>1.0.17</version>
 		    </dependency>
 		    ...
         </dependencies>
         
 ## Copyright
 
-Copyright .0.16 François Billioud.
+Copyright .0.17 François Billioud.
 Licensed under the Apache License, Version 2.0
 http://www.apache.org/licenses/LICENSE-2.0
