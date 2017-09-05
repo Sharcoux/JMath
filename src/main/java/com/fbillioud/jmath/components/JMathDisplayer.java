@@ -131,7 +131,7 @@ public class JMathDisplayer extends JPanel implements MathComponent {
     @Override
     public void setFontSize(float size) {
         float newSize = isScaleRatioSet() ? size * ratio : size;
-        setFont(getFont().deriveFont(newSize));
+        setFont(getFont().deriveFont(size));//Le ratio est appliqué par setFont
         for(Component c : getComponents()) {if(c instanceof MathComponent) ((MathComponent)c).setFontSize(newSize);}
         invalidate();
     }
