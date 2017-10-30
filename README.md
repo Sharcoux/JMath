@@ -7,11 +7,12 @@ This library provides a component that can display MathML. It is meant to be bet
 
 To create a new component, simply do:
 
-    JMathDisplayer component = new JMathDisplayer(testString);
+    JMathDisplayer component = new JMathDisplayer(mathMLString);
+    //mathMLString can be like "<math><mfrac><mn>1</mn><mn>2</mn></mfrac></math>"
 
 ## Current support
 
-All tags are currently supported, but very few attributes are supported. Other attributes will be supported if needed. Feel free to ask, or participate.
+All tags are currently supported, but only main attributes are supported. Other attributes will be supported if needed. Feel free to ask, or participate.
 
 Attributes currently supported:
 
@@ -51,6 +52,6 @@ You can now import the artefact as usual:
         
 ## Copyright
 
-Copyright .0.17 François Billioud.
+Copyright 2017 François Billioud.
 Licensed under the Apache License, Version 2.0
 http://www.apache.org/licenses/LICENSE-2.0
